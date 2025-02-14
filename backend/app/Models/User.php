@@ -30,8 +30,10 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
     public static $cacheKey = 'users';
 
     protected $fillable = [
+        'name',
         'email',
         'password',
+        'profile_picture'
     ];
 
     /**

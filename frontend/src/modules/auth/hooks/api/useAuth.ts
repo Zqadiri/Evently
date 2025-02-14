@@ -11,6 +11,7 @@ export interface LoginInput {
 }
 
 export interface RegisterInput {
+  full_name: string;
   email: string;
   password: string;
 }
@@ -66,7 +67,7 @@ const useAuth = (): AuthData => {
 
   const fetchApi = useApi();
 
-  const { data: user, mutate } = useSWR<User | null>(ApiRoutes.Auth.Me, async (url) => {
+  const { data: user, mutate } = useSWR<User | null>(ApiRoutes.Auth.Me, async (url: string) => { // added the type here
     if (!localStorage.getItem('authToken')) {
       setInitialized(true);
       return null;
@@ -87,6 +88,7 @@ const useAuth = (): AuthData => {
   });
 
   const login = async (input: LoginInput, options?: FetchApiOptions) => {
+
     const response = await fetchApi<{ token: string }>(ApiRoutes.Auth.Login, {
       data: input,
       ...options,
@@ -105,12 +107,10 @@ const useAuth = (): AuthData => {
       data: input,
       ...options,
     });
-
     if (response.success && response.data?.token) {
       localStorage.setItem('authToken', response.data.token);
       mutate();
     }
-
     return response;
   };
 

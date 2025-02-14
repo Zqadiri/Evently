@@ -15,6 +15,7 @@ const RegisterForm = () => {
   const { register } = useAuth();
 
   const RegisterSchema = Yup.object().shape({
+    full_name: Yup.string(),
     email: Yup.string()
       .email("Le format de l'email est incorrect")
       .max(191, 'Le champ est trop long.')
@@ -24,6 +25,11 @@ const RegisterForm = () => {
 
   const methods = useForm<RegisterInput>({
     resolver: yupResolver(RegisterSchema),
+    defaultValues: {  // Initialize the values
+    full_name: '',
+      email: '',
+      password: '',
+    },
   });
 
   const {
@@ -33,11 +39,13 @@ const RegisterForm = () => {
   const onSubmit = async (data: RegisterInput) => {
     await register(
       {
+        full_name: data.full_name,
         email: data.email,
         password: data.password,
       },
       { displayProgress: true, displaySuccess: true }
     );
+    
   };
   return (
     <>
@@ -56,13 +64,16 @@ const RegisterForm = () => {
       <Card sx={{ maxWidth: '450px', margin: 'auto' }}>
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={4} sx={{ padding: 5 }}>
+             <Grid item xs={12}>
+              <RHFTextField name="full_name" label="Nom Complet" />
+            </Grid>
             <Grid item xs={12}>
               <RHFTextField name="email" label="Email" />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12}> 
               <RHFTextField name="password" label="Mot de passe" type="password" />
             </Grid>
-            <Grid item xs={12} sx={{ textAlign: 'center' }}>
+            <Grid item xs={24} sx={{ textAlign: 'center' }}>
               <LoadingButton
                 size="large"
                 variant="contained"
