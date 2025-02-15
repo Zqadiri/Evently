@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 interface ResetPasswordProps {
   token: string;
 }
+
 type ResetPasswordInputForm = Omit<ResetPasswordInput, 'token'>;
 const ResetPassword = (props: ResetPasswordProps) => {
   const { resetPassword } = useAuth();
@@ -29,6 +30,7 @@ const ResetPassword = (props: ResetPasswordProps) => {
       .required(t('common:field_required'))
       .oneOf([Yup.ref('password')], t('auth:passwords_not_match')),
   });
+  
   const methods = useForm<ResetPasswordInputForm>({
     resolver: yupResolver(ResetPasswordSchema),
     defaultValues: {
@@ -42,16 +44,21 @@ const ResetPassword = (props: ResetPasswordProps) => {
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
+
   const onSubmit = async (data: ResetPasswordInputForm) => {
-    await resetPassword(
-      {
-        email: data.email,
-        password: data.password,
-        passwordConfirmation: data.passwordConfirmation,
-        token: props.token,
-      },
-      { displayProgress: true, displaySuccess: true }
-    );
+      const response = await resetPassword(
+        {
+          email: data.email,
+          password: data.password,
+          passwordConfirmation: data.passwordConfirmation,
+          token: props.token,
+        },
+        { displayProgress: true, displaySuccess: true }
+      );
+  
+      if (response.success) 
+        window.location.href = '/';
+      return response;
   };
   return (
     <>

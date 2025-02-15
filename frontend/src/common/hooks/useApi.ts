@@ -26,6 +26,7 @@ const useApi = () => {
   const { t, i18n } = useTranslation(['common']);
 
   const fetchApi = useCallback(
+    
     async <T>(endpoint: string, options?: ApiOptions): Promise<ApiResponse<T>> => {
       const authToken = localStorage.getItem('authToken');
       const headers: Headers = new Headers();

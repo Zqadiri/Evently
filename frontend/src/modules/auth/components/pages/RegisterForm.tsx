@@ -13,7 +13,6 @@ import * as Yup from 'yup';
 
 const RegisterForm = () => {
   const { register } = useAuth();
-
   const RegisterSchema = Yup.object().shape({
     full_name: Yup.string(),
     email: Yup.string()
@@ -25,8 +24,8 @@ const RegisterForm = () => {
 
   const methods = useForm<RegisterInput>({
     resolver: yupResolver(RegisterSchema),
-    defaultValues: {  // Initialize the values
-    full_name: '',
+    defaultValues: {
+      full_name: '',
       email: '',
       password: '',
     },

@@ -1,27 +1,41 @@
-import Routes from '@common/defs/routes';
-import ResetPassword from '@modules/auth/components/pages/ResetPassword';
-import withAuth, { AUTH_MODE } from '@modules/auth/hocs/withAuth';
 import { NextPage } from 'next';
+import { GetServerSideProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { useRouter } from 'next/router';
+import withAuth, { AUTH_MODE } from '@modules/auth/hocs/withAuth';
+import Routes from '@common/defs/routes';
+import RequestPassword from '@modules/auth/components/pages/ResetPassword';
 
-const ResetPasswordPage: NextPage = () => {
-  const router = useRouter();
-  // token from url as string
-  const { token } = router.query;
+interface ResetPasswordPageProps {
+  token: string;
+}
+
+const ResetPasswordPage: NextPage<ResetPasswordPageProps> = ({ token }) => {
   return (
     <>
-      <ResetPassword token={token as string} />
+      <RequestPassword token={token} />
     </>
   );
 };
 
-export const getStaticProps = async ({ locale }: { locale: string }) => ({
-  props: {
-    ...(await serverSideTranslations(locale, ['topbar', 'footer', 'leftbar', 'auth', 'common'])),
-  },
-});
+export const getServerSideProps: GetServerSideProps<ResetPasswordPageProps> = async (context) => {
+  const { locale, params } = context;
+  const { token } = params!; // Extract the token from the URL
 
+  if (!token) {
+    return {
+      notFound: true,
+    };
+  }
+
+  return {
+    props: {
+      ...(await serverSideTranslations(locale!, ['topbar', 'footer', 'leftbar', 'common', 'auth'])),
+      token,
+    },
+  };
+};
+
+// Wrap the page with the withAuth higher-order component
 export default withAuth(ResetPasswordPage, {
   mode: AUTH_MODE.LOGGED_OUT,
   redirectUrl: Routes.Common.Home,

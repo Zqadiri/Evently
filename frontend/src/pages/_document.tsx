@@ -3,7 +3,7 @@ import { Head, Html, Main, NextScript } from 'next/document';
 
 const Document = () => {
   return (
-    <Html lang="fr">
+    <Html lang="fr" translate="no"> 
       <Head>
         <meta charSet="utf-8" />
 
