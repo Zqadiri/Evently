@@ -25,6 +25,10 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             CrudPermissionSeeder::class,
             UserSeeder::class,
+            CategorySeeder::class,
+            UsersTableSeeder::class,
+            EventSeeder::class,
+            EventParticipantSeeder::class,
         ];
         if (! App::environment('prod') && ! App::environment('preprod')) {
             $seeders = array_merge($seeders, []);

@@ -13,7 +13,7 @@ interface PageHeaderProps {
     startIcon?: JSX.Element;
   };
 }
-const PageHeader = (props: PageHeaderProps) => {
+const EventsListPageHeader = (props: PageHeaderProps) => {
   const { can } = usePermissions();
   const action = props.action;
   return (

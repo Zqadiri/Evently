@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -56,6 +57,18 @@ Route::middleware('auth:api')->group(
                         Route::put('/{id}', 'updateOne');
                         Route::patch('/{id}', 'patchOne');
                         Route::delete('/{id}', 'deleteOne');
+                    }
+                );
+            }
+        );
+
+
+        Route::prefix('events')->name('events.')->group(
+            function () {
+                Route::controller(EventController::class)->group(
+                    function () {
+                        Route::get('/', 'getAllEventsWithDetails');
+                        Route::post('/{eventId}/participants', 'addParticipants');
                     }
                 );
             }

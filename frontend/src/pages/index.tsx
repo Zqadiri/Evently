@@ -1,4 +1,4 @@
-import PageHeader from '@common/components/lib/partials/PageHeader';
+import EventsTable from '@modules/events/EventsGrid';
 import Routes from '@common/defs/routes';
 import withAuth, { AUTH_MODE } from '@modules/auth/hocs/withAuth';
 import { NextPage } from 'next';
@@ -9,7 +9,8 @@ const Index: NextPage = () => {
   const { t } = useTranslation(['home']);
   return (
     <>
-      <PageHeader title={t('home:dashboard')} />
+      {/* <PageHeader title={t('home:dashboard')} /> */}
+      <EventsTable />
     </>
   );
 };

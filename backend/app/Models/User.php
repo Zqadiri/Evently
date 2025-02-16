@@ -36,6 +36,18 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
         'profile_picture'
     ];
 
+    // Relationship to events organized by the user
+    public function organizedEvents()
+    {
+        return $this->hasMany(Event::class, 'organizer_id');
+    }
+
+    // Relationship to events the user is participating in
+    public function participatingEvents()
+    {
+        return $this->belongsToMany(Event::class, 'event_participant');
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -70,14 +82,14 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
         parent::booted();
         static::created(
             function ($user) {
-                $user->givePermission('users.'.$user->id.'.read');
-                $user->givePermission('users.'.$user->id.'.update');
-                $user->givePermission('users.'.$user->id.'.delete');
+                $user->givePermission('users.' . $user->id . '.read');
+                $user->givePermission('users.' . $user->id . '.update');
+                $user->givePermission('users.' . $user->id . '.delete');
             }
         );
         static::deleted(
             function ($user) {
-                $permissions = Permission::where('name', 'like', 'users.'.$user->id.'.%')->get();
+                $permissions = Permission::where('name', 'like', 'users.' . $user->id . '.%')->get();
                 DB::table('users_permissions')->whereIn('permission_id', $permissions->pluck('id'))->delete();
                 Permission::destroy($permissions->pluck('id'));
             }
@@ -91,16 +103,16 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
 
     public function hasPermission($entityName, $action, $entityId = null)
     {
-        $permissionName = $entityName.".$action";
+        $permissionName = $entityName . ".$action";
         if ($this->hasPermissionName($permissionName)) {
             return true;
         }
-        $permissionName = $entityName.'.*';
+        $permissionName = $entityName . '.*';
         if ($this->hasPermissionName($permissionName)) {
             return true;
         }
         if ($entityId !== null) {
-            $permissionName = $entityName.".$entityId.$action";
+            $permissionName = $entityName . ".$entityId.$action";
             if ($this->hasPermissionName($permissionName)) {
                 return true;
             }
@@ -112,7 +124,7 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
     public function givePermission($permissionName)
     {
         $permission = Permission::where('name', $permissionName)->first();
-        if (! $permission) {
+        if (!$permission) {
             $permission = Permission::create(['name' => $permissionName]);
         }
         $this->permissions()->save($permission);
@@ -120,7 +132,7 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
 
     public function removeAllPermissions($entityName, $entityId)
     {
-        $ids = $this->permissions()->where('name', 'like', $entityName.'.'.$entityId.'.%')->pluck('permissions.id');
+        $ids = $this->permissions()->where('name', 'like', $entityName . '.' . $entityId . '.%')->pluck('permissions.id');
         $this->permissions()->detach($ids);
     }
 
@@ -154,12 +166,12 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
 
     public function rolesTableReadPermissions(string $table)
     {
-        return $this->hasManyDeepFromRelations($this->roles(), (new Role)->permissions())->where('permissions.name', 'like', $table.'%read');
+        return $this->hasManyDeepFromRelations($this->roles(), (new Role)->permissions())->where('permissions.name', 'like', $table . '%read');
     }
 
     public function allTableReadPermissions(string $table)
     {
-        return $this->permissions()->select('permissions.id', 'permissions.name')->where('permissions.name', 'like', $table.'%read')->union($this->rolesTableReadPermissions($table)->select('permissions.id', 'permissions.name', 'permissions.id as pivot_permission_id', 'users_roles.user_id as pivot_user_id'));
+        return $this->permissions()->select('permissions.id', 'permissions.name')->where('permissions.name', 'like', $table . '%read')->union($this->rolesTableReadPermissions($table)->select('permissions.id', 'permissions.name', 'permissions.id as pivot_permission_id', 'users_roles.user_id as pivot_user_id'));
     }
 
     public function hasRole(ROLE_ENUM $role): bool
@@ -176,10 +188,12 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
     public function syncRoles(array $roles)
     {
         $roleIds = Role::whereIn(
-            'name', array_map(
+            'name',
+            array_map(
                 function (ROLE_ENUM $role) {
                     return $role->value;
-                }, $roles
+                },
+                $roles
             )
         )->get()->pluck('id');
         $this->roles()->sync($roleIds);
@@ -219,7 +233,7 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
             'full_name' => 'required|string|max:255' // Add validation for full_name
         ];
         if ($id !== null) {
-            $rules['email'] .= ','.$id;
+            $rules['email'] .= ',' . $id;
             $rules['password'] = 'nullable|string';
         }
 
