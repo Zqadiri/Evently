@@ -10,6 +10,8 @@ export interface CreateOneInput {
 }
 
 export interface UpdateOneInput {
+  full_name: string;
+  profile_picture: string;
   email: string;
   password?: string;
   role: ROLE;

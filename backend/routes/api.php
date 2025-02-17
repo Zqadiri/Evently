@@ -62,13 +62,14 @@ Route::middleware('auth:api')->group(
             }
         );
 
-
         Route::prefix('events')->name('events.')->group(
             function () {
                 Route::controller(EventController::class)->group(
                     function () {
                         Route::get('/', 'getAllEventsWithDetails');
                         Route::post('/{eventId}/participants', 'addParticipants');
+                        Route::post('/{eventId}/join', 'joinEvent')->middleware('auth');
+                        Route::get('/category/{categoryId}', 'getEventsByCategory');
                     }
                 );
             }

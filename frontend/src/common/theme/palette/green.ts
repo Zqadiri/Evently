@@ -20,56 +20,56 @@ const GREY = {
 };
 
 const PRIMARY = {
-  lighter: '#C8FACD',
-  light: '#5BE584',
-  main: '#00AB55',
-  dark: '#007B55',
-  darker: '#005249',
+  lighter: '#E0E0E0', // Light gray
+  light: '#9E9E9E',  // Medium gray
+  main: '#616161',   // Dark gray
+  dark: '#424242',   // Very dark gray
+  darker: '#212121', // Almost black
   contrastText: '#FFFFFF',
 };
 
 const SECONDARY = {
-  lighter: '#D6E4FF',
-  light: '#84A9FF',
-  main: '#3366FF',
-  dark: '#1939B7',
-  darker: '#091A7A',
-  contrastText: '#fff',
+  lighter: '#F5F5F5', // Light gray
+  light: '#E0E0E0',  // Medium gray
+  main: '#757575',   // Gray
+  dark: '#616161',   // Dark gray
+  darker: '#424242', // Very dark gray
+  contrastText: '#FFFFFF',
 };
 
 const INFO = {
-  lighter: '#CAFDF5',
-  light: '#61F3F3',
-  main: '#00B8D9',
-  dark: '#006C9C',
-  darker: '#003768',
+  lighter: '#E3F2FD', // Light blue (muted)
+  light: '#90CAF9',  // Medium blue (muted)
+  main: '#2196F3',   // Blue (muted)
+  dark: '#1E88E5',   // Dark blue (muted)
+  darker: '#1565C0', // Very dark blue (muted)
   contrastText: '#FFFFFF',
 };
 
 const SUCCESS = {
-  lighter: '#D8FBDE',
-  light: '#86E8AB',
-  main: '#36B37E',
-  dark: '#1B806A',
-  darker: '#0A5554',
+  lighter: '#E8F5E9', // Light green (muted)
+  light: '#A5D6A7',  // Medium green (muted)
+  main: '#4CAF50',   // Green (muted)
+  dark: '#388E3C',   // Dark green (muted)
+  darker: '#1B5E20', // Very dark green (muted)
   contrastText: '#FFFFFF',
 };
 
 const WARNING = {
-  lighter: '#FFF5CC',
-  light: '#FFD666',
-  main: '#FFAB00',
-  dark: '#B76E00',
-  darker: '#7A4100',
+  lighter: '#FFF8E1', // Light yellow (muted)
+  light: '#FFE082',  // Medium yellow (muted)
+  main: '#FFC107',   // Yellow (muted)
+  dark: '#FFA000',   // Dark yellow (muted)
+  darker: '#FF8F00', // Very dark yellow (muted)
   contrastText: GREY[800],
 };
 
 const ERROR = {
-  lighter: '#FFE9D5',
-  light: '#FFAC82',
-  main: '#FF5630',
-  dark: '#B71D18',
-  darker: '#7A0916',
+  lighter: '#FFEBEE', // Light red (muted)
+  light: '#EF9A9A',  // Medium red (muted)
+  main: '#F44336',   // Red (muted)
+  dark: '#D32F2F',   // Dark red (muted)
+  darker: '#B71C1C', // Very dark red (muted)
   contrastText: '#FFFFFF',
 };
 

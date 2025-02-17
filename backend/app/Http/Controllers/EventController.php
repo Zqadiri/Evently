@@ -2,19 +2,49 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Models\Event;
-use Log;
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
     // Fetch all events with their category and participants
-    public function getAllEventsWithDetails()
+    public function getAllEventsWithDetails(): JsonResponse
     {
         $events = Event::with(['category', 'participants', 'organizer'])->get();
-    
-        // Format the events to match the frontend interface
-        $formattedEvents = $events->map(function ($event) {
+        $formattedEvents = $this->formatEvents($events);
+
+        return response()->json([
+            'message' => 'Events retrieved successfully.',
+            'data' => $formattedEvents,
+        ]);
+    }
+
+    // Fetch events that belong to the specified category
+    public function getEventsByCategory($categoryId): JsonResponse
+    {
+        $events = Event::with(['category', 'participants', 'organizer'])
+            ->where('category_id', $categoryId)
+            ->get();
+
+        $formattedEvents = $this->formatEvents($events);
+
+        return response()->json([
+            'message' => 'Events retrieved successfully.',
+            'data' => $formattedEvents,
+        ]);
+    }
+
+    /**
+     * Format events to match the frontend interface.
+     *
+     * @param \Illuminate\Database\Eloquent\Collection $events
+     * @return array
+     */
+    private function formatEvents($events): array
+    {
+        return $events->map(function ($event) {
             return [
                 'id' => $event->id,
                 'title' => $event->title,
@@ -35,35 +65,64 @@ class EventController extends Controller
                 'participants' => $event->participants->map(function ($participant) {
                     return [
                         'id' => $participant->id,
-                        'fullName' => $participant->full_name, // Use camelCase for frontend compatibility
+                        'fullName' => $participant->full_name,
                         'email' => $participant->email,
-                        'profilePicture' => $participant->profile_picture, // Use camelCase for frontend compatibility
+                        'profilePicture' => $participant->profile_picture,
                     ];
                 }),
             ];
-        });
-    
-        return response()->json([
-            'message' => 'Events retrieved successfully.',
-            'data' => $formattedEvents,
-        ]);
+        })->toArray();
     }
 
+    /**
+     * Join an event.
+     *
+     * @param Request $request
+     * @param int $eventId
+     * @return JsonResponse
+     */
 
-    // public function addParticipants(Request $request, $eventId)
-    // {
-    //     $request->validate([
-    //         'user_ids' => 'required|array', // Array of user IDs to add as participants
-    //         'user_ids.*' => 'exists:users,id', // Ensure each user ID exists in the users table
-    //     ]);
+    public function joinEvent(Request $request, $eventId): JsonResponse
+    {
+        // Ensure the user is authenticated
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthorized. Please log in to join the event.',
+            ], 401);
+        }
 
-    //     $event = Event::findOrFail($eventId);
+        $event = Event::find($eventId);
+        if (!$event) {
+            return response()->json([
+                'message' => 'Event not found.',
+            ], 404);
+        }
 
-    //     $event->participants()->attach($request->user_ids);
+        //!! Check if the user is already a participant 
+        if ($event->participants()->where('user_id', $user->id)->exists()) {
+            return response()->json([
+                'message' => 'You are already a participant in this event.',
+            ], 400);
+        }
 
-    //     return response()->json([
-    //         'message' => 'Participants added successfully.',
-    //         'event' => $event,
-    //     ]);
-    // }
+        // Check if the event has reached its maximum participants limit
+        if ($event->participants()->count() >= $event->max_participants) {
+            return response()->json([
+                'message' => 'This event has reached its maximum number of participants.',
+            ], 400);
+        }
+
+        $event->participants()->attach($user->id);
+
+        return response()->json([
+            'message' => 'You have successfully joined the event.',
+            'data' => [
+                'eventId' => $event->id,
+                'eventTitle' => $event->title,
+                'userId' => $user->id,
+                'userEmail' => $user->email,
+            ],
+        ]);
+    }
 }
