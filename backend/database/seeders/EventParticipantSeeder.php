@@ -23,7 +23,7 @@ class EventParticipantSeeder extends Seeder
 
         // attach 3 to 5 random participants
         $events->each(function ($event) use ($users, $faker) {
-            $participants = $users->random($faker->numberBetween(3, 5))->pluck('id')->toArray();
+            $participants = $users->random($faker->numberBetween(1, 1))->pluck('id')->toArray();
             $event->participants()->attach($participants);
         });
     }

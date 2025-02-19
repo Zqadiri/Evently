@@ -24,7 +24,7 @@ class EventSeeder extends Seeder
 
         for ($i = 1; $i <= 10; $i++) {
             Event::create([
-                'title' => $faker->sentence(4), // Random title
+                'title' => $faker->sentence(2), // Random title
                 'date' => $faker->dateTimeBetween('now', '+1 year'), // Random date within the next year
                 'location' => $faker->city, // Random city
                 'description' => $faker->paragraph, // Random description

@@ -1,4 +1,4 @@
-import EventsTable from '@modules/events/EventsGrid';
+import EventsGrid from '@modules/events/components/partials/EventsGrid';
 import Routes from '@common/defs/routes';
 import withAuth, { AUTH_MODE } from '@modules/auth/hocs/withAuth';
 import { NextPage } from 'next';
@@ -10,7 +10,8 @@ const Index: NextPage = () => {
   return (
     <>
       {/* <PageHeader title={t('home:dashboard')} /> */}
-      <EventsTable />
+      <EventsGrid filterToolbar fetchItems />
+
     </>
   );
 };

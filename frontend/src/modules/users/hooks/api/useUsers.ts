@@ -14,7 +14,7 @@ export interface UpdateOneInput {
   profile_picture: string;
   email: string;
   password?: string;
-  role: ROLE;
+  role?: ROLE;
 }
 
 export type UpsertOneInput = CreateOneInput | UpdateOneInput;

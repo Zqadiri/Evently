@@ -1,61 +1,33 @@
-import { useState, useEffect } from 'react';
-import useFetch from '@common/hooks/useFetch';
+import ApiRoutes from '@common/defs/api-routes';
 import { Event } from '@modules/events/defs/types';
+import useItems, { UseItems, UseItemsOptions, defaultOptions } from '@common/hooks/useItems';
 
-const useEvents = () => {
-  const [events, setEvents] = useState<Event[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isError, setIsError] = useState<boolean>(false);
-  const { makeFetch } = useFetch<{ data: Event[] }>();
+export interface CreateOneInput {
+  title: string;
+  date: Date;
+  location: string;
+  image: string;
+  description: string;
+  maxParticipants: number;
+}
 
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/events`;
+export interface UpdateOneInput {
+  name: string;
+  date: Date;
+  location: string;
+  image: string;
+  description: string;
+  maxParticipants: number;
+}
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      const token = localStorage.getItem('authToken');
+export type UpsertOneInput = CreateOneInput | UpdateOneInput;
 
-      if (!token) {
-        console.error('No token found in local storage');
-        setIsError(true);
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        const response = await makeFetch(url, {
-          verbose: true,
-          displayProgress: true,
-          request: {
-            method: 'GET',
-            headers: new Headers({
-              'Accept': 'application/json',
-              'Authorization': `Bearer ${token}`,
-            }),
-          },
-        });
-
-        console.log('API Event Response:', response);
-
-        if (response && response.data && Array.isArray(response.data)) {
-          setEvents(response.data);
-          setIsError(false);
-        } else {
-          setEvents([]);
-          setIsError(true);
-        }
-      } catch (error) {
-        console.error('Error fetching events:', error);
-        setEvents([]);
-        setIsError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchEvents();
-  }, [makeFetch, url]);
-
-  return { data: events, isLoading, isError };
+const useEvents: UseItems<Event, CreateOneInput, UpdateOneInput> = (
+  opts: UseItemsOptions = defaultOptions
+) => {
+  const apiRoutes = ApiRoutes.Events;
+  const useItemsHook = useItems<Event, CreateOneInput, UpdateOneInput>(apiRoutes, opts);
+  return useItemsHook;
 };
 
 export default useEvents;

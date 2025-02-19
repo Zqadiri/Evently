@@ -3,20 +3,20 @@ import { alpha } from '@mui/material/styles';
 
 const GREY = {
   0: '#FFFFFF',
-  50: '#F3E5F5', // Light purple tint
-  100: '#E1BEE7', // Very light purple
-  200: '#CE93D8', // Light purple
-  300: '#BA68C8', // Medium light purple
-  400: '#AB47BC', // Purple
-  500: '#9C27B0', // Medium purple
-  600: '#8E24AA', // Medium dark purple
-  700: '#7B1FA2', // Dark purple
-  800: '#6A1B9A', // Very dark purple
-  900: '#4A148C', // Deep purple
-  A100: '#EA80FC', // Bright light purple
-  A200: '#E040FB', // Bright purple
-  A400: '#D500F9', // Bright dark purple
-  A700: '#AA00FF', // Vivid purple
+  50: '#F9FAFB',
+  100: '#F2F2F2',
+  200: '#F4F6F8',
+  300: '#DFE3E8',
+  400: '#C4CDD5',
+  500: '#919EAB',
+  600: '#637381',
+  700: '#454F5B',
+  800: '#212B36',
+  900: '#161C24',
+  A100: '#D0D7DC',
+  A200: '#A1AEBD',
+  A400: '#657487',
+  A700: '#455463',
 };
 
 const PRIMARY = {
@@ -25,7 +25,7 @@ const PRIMARY = {
   main: '#673AB7', // Medium purple
   dark: '#512DA8', // Dark purple
   darker: '#311B92', // Deep purple
-  contrastText: '#FFFFFF',
+  contrastText: '#fff',
 };
 
 const SECONDARY = {
@@ -34,7 +34,7 @@ const SECONDARY = {
   main: '#9C27B0', // Medium purple
   dark: '#7B1FA2', // Dark purple
   darker: '#4A148C', // Deep purple
-  contrastText: '#FFFFFF',
+  contrastText: '#fff',
 };
 
 const INFO = {
@@ -43,34 +43,34 @@ const INFO = {
   main: '#9C27B0', // Purple
   dark: '#7B1FA2', // Dark purple
   darker: '#4A148C', // Deep purple
-  contrastText: '#FFFFFF',
+  contrastText: '#fff',
 };
 
 const SUCCESS = {
-  lighter: '#C8E6C9', // Light green
-  light: '#81C784', // Medium green
-  main: '#4CAF50', // Green
-  dark: '#388E3C', // Dark green
-  darker: '#1B5E20', // Very dark green
-  contrastText: '#FFFFFF',
+  lighter: '#E9FCD4',
+  light: '#AAF27F',
+  main: '#54D62C',
+  dark: '#229A16',
+  darker: '#08660D',
+  contrastText: GREY[800],
 };
 
 const WARNING = {
-  lighter: '#FFF8E1', // Light yellow
-  light: '#FFE082', // Medium yellow
-  main: '#FFC107', // Yellow
-  dark: '#FFA000', // Dark yellow
-  darker: '#FF8F00', // Very dark yellow
+  lighter: '#FFF7CD',
+  light: '#FFE16A',
+  main: '#FFC107',
+  dark: '#B78103',
+  darker: '#7A4F01',
   contrastText: GREY[800],
 };
 
 const ERROR = {
-  lighter: '#FFEBEE', // Light red
-  light: '#EF9A9A', // Medium red
-  main: '#F44336', // Red
-  dark: '#D32F2F', // Dark red
-  darker: '#B71C1C', // Very dark red
-  contrastText: '#FFFFFF',
+  lighter: '#FFE7D9',
+  light: '#FFA48D',
+  main: '#FF4842',
+  dark: '#B72136',
+  darker: '#7A0C2E',
+  contrastText: '#fff',
 };
 
 const palette: CustomPalette = {
@@ -89,8 +89,8 @@ const palette: CustomPalette = {
     disabled: GREY[500],
   },
   background: {
-    paper: GREY[100],
-    default: GREY[50],
+    paper: '#fff',
+    default: GREY[100],
     neutral: GREY[200],
   },
   action: {

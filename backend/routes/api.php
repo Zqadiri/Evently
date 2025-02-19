@@ -26,7 +26,8 @@ Route::prefix('auth')->name('auth.')->group(
                 Route::post('/request-password-reset', 'requestPasswordReset');
                 Route::post('/reset-password', 'resetPassword');
                 Route::get(
-                    '/disconnected', function () {
+                    '/disconnected',
+                    function () {
                         return response()->json(['success' => false, 'errors' => [__('auth.disconnected')]]);
                     }
                 );
@@ -66,7 +67,8 @@ Route::middleware('auth:api')->group(
             function () {
                 Route::controller(EventController::class)->group(
                     function () {
-                        Route::get('/', 'getAllEventsWithDetails');
+                        Route::get('/', 'readAll');
+                        Route::get('/{eventId}', 'readOne');
                         Route::post('/{eventId}/participants', 'addParticipants');
                         Route::post('/{eventId}/join', 'joinEvent')->middleware('auth');
                         Route::get('/category/{categoryId}', 'getEventsByCategory');
@@ -93,7 +95,8 @@ Route::middleware('auth:api')->group(
 );
 
 Route::get(
-    '/hello', function () {
+    '/hello',
+    function () {
         return response()->json(['success' => true, 'data' => ['message' => 'Hello World!']]);
     }
 );
@@ -111,13 +114,15 @@ Route::prefix('uploads')->name('uploads.')->group(
 Route::prefix('cloud')->name('cloud.')->group(
     function () {
         Route::get(
-            '/{path}', function () {
+            '/{path}',
+            function () {
                 $path = request()->path;
-                if (! Storage::disk('cloud')->exists($path)) {
+                if (!Storage::disk('cloud')->exists($path)) {
                     return response()->json(
                         [
                             'message' => 'File not found',
-                        ], 404
+                        ],
+                        404
                     );
                 }
 
@@ -132,20 +137,22 @@ if (config('app.debug')) {
         function () {
             // Route that display cache content in json format. Url parameter "cache key" is required (:key).
             Route::get(
-                '/cache/{key}', function ($key) {
-                    $cacheData = Cache::get($key);
-                    $success = $cacheData !== null;
+                '/cache/{key}',
+                function ($key) {
+                $cacheData = Cache::get($key);
+                $success = $cacheData !== null;
 
-                    return response()->json(
-                        [
-                            'success' => $success,
-                            'data' => $success ? $cacheData : null,
-                        ]
-                    );
-                }
+                return response()->json(
+                    [
+                        'success' => $success,
+                        'data' => $success ? $cacheData : null,
+                    ]
+                );
+            }
             );
             Route::get(
-                '/routes-logs', function () {
+                '/routes-logs',
+                function () {
                     // Récupérer les logs agrégés par route
                     $routesData = DB::table('routes_logs')
                         ->select('route', DB::raw('SUM(duration) as total_duration'), DB::raw('COUNT(*) as request_count'))
@@ -158,10 +165,10 @@ if (config('app.debug')) {
                     // Ajouter le pourcentage du total à chaque route
                     $routesData->map(
                         function ($item) use ($totalTime) {
-                            $item->total_percentage = $totalTime > 0 ? ($item->total_duration / $totalTime) * 100 : 0;
+                        $item->total_percentage = $totalTime > 0 ? ($item->total_duration / $totalTime) * 100 : 0;
 
-                            return $item;
-                        }
+                        return $item;
+                    }
                     );
 
                     // Retourner les données

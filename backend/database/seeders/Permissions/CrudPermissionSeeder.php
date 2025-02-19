@@ -2,8 +2,11 @@
 
 namespace Database\Seeders\Permissions;
 
+use App\Models\Permission;
 use App\Services\ACLService;
 use Illuminate\Database\Seeder;
+use App\Models\Role;
+
 
 class CrudPermissionSeeder extends Seeder
 {
@@ -27,5 +30,57 @@ class CrudPermissionSeeder extends Seeder
             $aclService->assignScopePermissionsToRole($advertiserRole, 'interests', ['read']);
             $aclService->assignScopePermissionsToRole($advertiserRole, 'games', ['create', 'read_own']);
         */
+
+        $userRole = $this->createRole('user');
+        $adminRole = $this->createRole('admin');
+
+        $this->createScopePermissions('events', ['create', 'read', 'update', 'delete', 'cancel']);
+
+        $this->assignScopePermissionsToRole($adminRole, 'events', ['create', 'read', 'cancel']); //! same permissions for now
+        $this->assignScopePermissionsToRole($userRole, 'events', ['create', 'read', 'cancel']);
+    }
+
+    /**
+     * Creates a new role with the given name
+     * @param string $name
+     * @return Role|\Illuminate\Database\Eloquent\Model
+     */
+    public function createRole(string $name): Role
+    {
+        $role = Role::firstOrCreate(['name' => $name]);
+        return $role;
+    }
+
+    /**
+     * Creates permissions for a specific scope by combining the scope with each permission name.
+     * @param string $scope
+     * @param array $permissions
+     * @return void
+     */
+    public function createScopePermissions(string $scope, array $permissions): void
+    {
+        foreach ($permissions as $permission) {
+            Permission::firstOrCreate(['name' => $scope.'.'.$permission]);
+        }
+    }
+
+    /**
+     * Assigns permissions within a specific scope to a given role.
+     * 
+     * @param \App\Models\Role $role
+     * @param string $scope
+     * @param array $permissions
+     * @return void
+     */
+
+    public function assignScopePermissionsToRole(Role $role, string $scope, array $permissions): void
+    {
+        foreach ($permissions as $permission) {
+            $permissionName = $scope.'.'.$permission;
+
+            if (! $role->hasPermission($permissionName)) {
+                $role->givePermission($permissionName);
+            }
+        }
     }
 }

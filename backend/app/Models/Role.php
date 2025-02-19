@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums;
 use App\Enums\ROLE as ROLE_ENUM;
 
 class Role extends BaseModel

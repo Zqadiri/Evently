@@ -1,9 +1,12 @@
-export interface Event {
+import { CrudObject } from "@common/defs/types";
+
+export interface Event extends CrudObject{
   id: number;
   title: string;
-  date: string;
+  date: Date;
   location: string;
   description: string;
+	// image: string;
   maxParticipants: number;
   organizer: {
     id: number;

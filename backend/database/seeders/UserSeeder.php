@@ -15,7 +15,6 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-
         // if (env('APP_ENV') === 'prod') {
         //     $admin = User::firstOrCreate(
         //         ['email' => 'admin@cysc.fr'],
