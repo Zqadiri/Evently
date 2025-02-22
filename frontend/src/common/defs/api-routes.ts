@@ -1,5 +1,5 @@
 import Auth from '@modules/auth/defs/api-routes';
-import Users from '@modules/users/defs/api-routes';
+import Users from '@modules/users/defs/apiRoutes';
 import Events from '@modules/events/defs/api-routes';
 import Uploads from '@modules/uploads/defs/api-routes';
 import Posts from '@modules/posts/defs/api-routes';

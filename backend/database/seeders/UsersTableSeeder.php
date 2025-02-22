@@ -38,27 +38,26 @@ class UsersTableSeeder extends Seeder
             [
                 'full_name' => 'Admin User',
                 'email' => 'admin@admin.fr',
-                'password' => env('APP_ENV') === 'prod' ? 'fnFPB3TzGWTBoLA' : 'admin',
+                'password' => 'admin',
                 'role' => ROLE::ADMIN,
             ],
             [
                 'full_name' => 'Regular User',
                 'email' => 'user@user.fr',
-                'password' => env('APP_ENV') === 'prod' ? 'nRapnRYRdxcE' : 'user',
+                'password' => 'user',
                 'role' => ROLE::USER,
             ],
         ];
 
         foreach ($users as $userData) {
             $user = User::firstOrCreate(
-                ['email' => $userData['email']], // Search by email
+                ['email' => $userData['email']],
                 [
                     'full_name' => $userData['full_name'],
-                    'password' => Hash::make($userData['password']), // Hash the password
+                    'password' => Hash::make($userData['password']),
                 ]
             );
 
-            // Assign the role
             $user->assignRole($userData['role']);
         }
     }

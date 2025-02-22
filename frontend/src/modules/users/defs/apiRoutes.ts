@@ -1,7 +1,7 @@
-import { CrudApiRoutes } from '@common/defs/types';
+import { CrudAppRoutes } from '@common/defs/types';
 
 const prefix = '/users';
-const ApiRoutes: CrudApiRoutes = {
+const ApiRoutes: CrudAppRoutes = {
   CreateOne: prefix,
   ReadAll: prefix,
   ReadOne: prefix + '/{id}',

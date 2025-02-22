@@ -38,7 +38,7 @@ class EventController extends CrudController
             if (! $user->hasPermission($this->table, 'read')) {
                 return response()->json([
                     'success' => false,
-                    'errors' => [$this->table],
+                    'errors' => ['permission denied'],
                 ]);
             }
         }
@@ -46,6 +46,33 @@ class EventController extends CrudController
         $events = Event::with(['category', 'participants', 'organizer'])
         ->withCount('participants')
         ->get();
+
+        if (method_exists($this, 'afterReadAll')) {
+            $this->afterReadAll($events);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => ['items' => $events],
+        ]);
+    }
+
+    public function readOne($id, Request $request)
+    {
+        $user = $request->user();
+
+        if (in_array('read_all', $this->restricted)) {
+            if (! $user->hasPermission($this->table, 'read')) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => ['permission denied'],
+                ]);
+            }
+        }
+
+        $events = Event::with(['category', 'participants', 'organizer'])
+        ->withCount('participants')
+        ->find($id);
 
         if (method_exists($this, 'afterReadAll')) {
             $this->afterReadAll($events);

@@ -61,11 +61,15 @@ const ItemsCards = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
     <>
       <Grid container spacing={4} marginTop={2}>
         {rows.map((item) => {
-          console.log('>>' + JSON.stringify(item)); // Debugging line
           return (
             <Grid item xs={12} sm={6} md={4} key={item.id}>
               <Card
-                onClick={() => router.push(`/events/${item.id}`)}
+                onClick={() => 
+                  router.push({
+                    pathname: '/events/[eventId]',
+                    query: { eventId: item.id },
+                  })
+                }
                 sx={{
                   cursor: 'pointer',
                   '&:hover': {
@@ -85,6 +89,9 @@ const ItemsCards = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
                   style={{ width: '100%', height: 'auto', borderTopLeftRadius: '4px', borderTopRightRadius: '4px' }}
                 />
                 <CardContent sx={{ paddingBottom: 0 }}>
+                <Typography variant="body1" color="warning.main" sx={{ fontWeight: 'semibold', mb: 1 }}>
+                    {item.categoryName}
+                  </Typography>
                   <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
                     {item.title}
                   </Typography>
@@ -92,17 +99,17 @@ const ItemsCards = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
                     Hosted by: {item.organizerName || "Unknown Organizer"}
                   </Typography>
                   <Stack direction="row" alignItems="center" spacing={2} my={1}>
-                    <AccessTime sx={{ color: 'primary.main', fontSize: '20px', mr: 1 }} />
+                    <AccessTime sx={{ color: 'primary.darker', fontSize: '20px', mr: 1 }} />
                     <Typography variant="body1">
                       {dayjs(item.date).format('ddd, MMM D, YYYY | h:mm A')}
                     </Typography>
                   </Stack>
                   <Stack direction="row" alignItems="center" spacing={2} my={1}>
-                    <LocationOn sx={{ color: 'primary.main', fontSize: '20px', mr: 1 }} />
+                    <LocationOn sx={{ color: 'primary.darker', fontSize: '20px', mr: 1 }} />
                     <Typography variant="body1">{item.location}</Typography>
                   </Stack>
                   <Stack direction="row" alignItems="center" spacing={2} my={1}>
-                    <EventSeat sx={{ color: 'primary.main', fontSize: '20px', mr: 1 }} />
+                    <EventSeat sx={{ color: 'primary.darker', fontSize: '20px', mr: 1 }} />
                     <Typography variant="body1">
                       {item.participantsCount} going • {item.maxParticipants} spots
                     </Typography>
@@ -111,7 +118,7 @@ const ItemsCards = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
                 <CardActions sx={{ justifyContent: 'flex-end', p: 2 }}>
                   {!ownItems &&
                     !registredtems &&
-                    (item.userId === user?.id ? (
+                    (item.organizerId === user?.id ? (
                       <Chip variant="outlined" label="Your Event" color="info" />
                     ) : item.participantsCount < item.maxParticipants ? (
                       <Button

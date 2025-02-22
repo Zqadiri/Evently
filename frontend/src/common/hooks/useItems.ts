@@ -27,7 +27,9 @@ interface SavedReadAllParams {
 }
 
 export type ItemsData<Item> = { items: Item[]; meta: PaginationMeta };
-export type ItemData<Item> = { item: Item };
+export type ItemData<Item> = {
+  items: SetStateAction<Event | null>; item: Item 
+};
 export type ItemsResponse<Item> = ApiResponse<ItemsData<Item>>;
 export type ItemResponse<Item> = ApiResponse<ItemData<Item>>;
 

@@ -1,16 +1,14 @@
-import { CRUD_ACTION, Id } from '@common/defs/types';
+import { Id } from '@common/defs/types';
 
 export enum ROLE {
   ADMIN = 'admin',
   USER = 'user',
-  TEST = 'test',
 }
 
 export interface Permission {
   entity: string;
-  action: string | CRUD_ACTION | CRUD_ACTION[];
+  action: string;
   entityId?: Id;
-  entityQueryKey?: string;
 }
 
 export type PermissionCheck =

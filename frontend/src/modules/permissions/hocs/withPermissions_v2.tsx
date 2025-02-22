@@ -18,8 +18,6 @@ const withPermissions = <P extends object>(
 
     useEffect(() => {
       const permissionsToCheck = [...requiredPermissions];
-
-      // Vérifier les permissions avec entityId si router.query.id existe
       if (router.query.id && typeof router.query.id === 'string') {
         const id = router.query.id as string;
         requiredPermissions.forEach((requiredPermission) => {
