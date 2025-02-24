@@ -2,70 +2,41 @@ import { useState, useEffect } from 'react';
 import useSWRImmutable, { KeyedMutator } from 'swr';
 import useApi, { ApiResponse, FetchApiOptions } from '@common/hooks/useApi';
 import { Any, CrudApiRoutes, Id } from '@common/defs/types';
+import useAuth from '@modules/auth/hooks/api/useAuth';
 
-export interface PaginationMeta {
-  currentPage: number;
-  lastPage: number;
-  totalItems: number;
-}
-export interface FilterParam {
-  filterColumn: string;
-  filterOperator: string;
-  filterValue?: Any;
-}
-
-export interface SortParam {
-  column: string;
-  dir: string;
-}
-
-interface SavedReadAllParams {
-  page?: number;
-  pageSize?: number | 'all';
-  columnsSort?: SortParam;
-  filter?: FilterParam;
-}
-
-export type ItemsData<Item> = { items: Item[]; meta: PaginationMeta };
-export type ItemData<Item> = {
-  items: SetStateAction<Event | null>; item: Item 
-};
+export type ItemsData<Item> = { items: Item[] };
+export type ItemData<Item> = { item: Item };
 export type ItemsResponse<Item> = ApiResponse<ItemsData<Item>>;
 export type ItemResponse<Item> = ApiResponse<ItemData<Item>>;
 
 export interface UseItemsHook<Item, CreateOneInput, UpdateOneInput> {
   items: Item[] | null;
-  paginationMeta: PaginationMeta | null;
   createOne: (_input: CreateOneInput, options?: FetchApiOptions) => Promise<ItemResponse<Item>>;
   readOne: (id: Id, options?: FetchApiOptions) => Promise<ItemResponse<Item>>;
-  readAll: (
-    page?: number,
-    pageSize?: number | 'all',
-    columnsSort?: SortParam,
-    filterParam?: FilterParam[],
-    options?: FetchApiOptions
-  ) => Promise<ItemsResponse<Item>>;
+  readAll: (options?: FetchApiOptions) => Promise<ItemsResponse<Item>>;
+  readOwn: (id: Id, options?: FetchApiOptions) => Promise<ItemsResponse<Item>>;
+  readRegistred: (id: Id, options?: FetchApiOptions) => Promise<ItemsResponse<Item>>;
   updateOne: (
     id: Id,
     _input: UpdateOneInput,
     options?: FetchApiOptions
   ) => Promise<ItemResponse<Item>>;
-  patchOne: (
-    id: Id,
-    _input: Partial<UpdateOneInput>,
-    options?: FetchApiOptions
-  ) => Promise<ItemResponse<Item>>;
+  cancelOne: (id: Id, options?: FetchApiOptions) => Promise<ItemResponse<Item>>;
+  restoreOne: (id: Id, options?: FetchApiOptions) => Promise<ItemResponse<Item>>;
+  registerOne: (id: Id, input: any, options?: FetchApiOptions) => Promise<ItemResponse<Item>>;
   deleteOne: (id: Id, options?: FetchApiOptions) => Promise<ItemResponse<Item>>;
-  mutate: () => void;
+  mutate: KeyedMutator<Item[] | null>;
 }
 
 export interface UseItemsOptions {
   fetchItems?: boolean;
-  pageSize?: number;
+  fetchOwnItems?: boolean;
+  fetchRegistredItems?: boolean;
 }
 export const defaultOptions = {
   fetchItems: false,
-  pageSize: 25,
+  fetchOwnItems: false,
+  fetchRegistredItems: false,
 };
 
 export type UseItems<Item, CreateOneInput = Any, UpdateOneInput = Any> = (
@@ -77,33 +48,32 @@ const useItems = <Item, CreateOneInput, UpdateOneInput>(
   opts: UseItemsOptions = defaultOptions
 ): UseItemsHook<Item, CreateOneInput, UpdateOneInput> => {
   const fetchApi = useApi();
-  const [shouldRefetch, setShouldRefetch] = useState(opts.fetchItems);
-  const [savedReadAllParams, setSavedReadAllParams] = useState<SavedReadAllParams | null>();
+  const { user } = useAuth();
+  const id = user?.id ?? 0;
 
+  const mode = opts.fetchItems
+    ? apiRoutes.ReadAll
+    : null || opts.fetchOwnItems
+    ? apiRoutes.ReadOwn.replace('{id}', id.toString())
+    : null || opts.fetchRegistredItems
+    ? apiRoutes.ReadRegistred.replace('{id}', id.toString())
+        : null;
+  
+  const read = () => {
+    if (opts.fetchOwnItems) return readOwn(id);
+    if (opts.fetchRegistredItems) return readRegistred(id);
+    return readAll();
+  }
+  
   const { data, mutate } = useSWRImmutable<Item[] | null>(
-    shouldRefetch ? apiRoutes.ReadAll : null,
+    mode,
     async (_url: string) => {
-      if (!shouldRefetch) {
-        return null;
-      }
-      const response = await readAll(
-        savedReadAllParams?.page,
-        savedReadAllParams?.pageSize,
-        savedReadAllParams?.columnsSort,
-        savedReadAllParams && savedReadAllParams.filter ? [savedReadAllParams?.filter] : []
-      );
+      const response = await read();
       return response.data?.items ?? null;
     }
   );
 
-  const mutateAndRefetch: KeyedMutator<Item[] | null> = async () => {
-    setShouldRefetch(true);
-    mutate();
-    return null;
-  };
-
   const [items, setItems] = useState<Item[] | null>(null);
-  const [paginationMeta, setPaginationMeta] = useState<PaginationMeta | null>(null);
 
   useEffect(() => {
     setItems(data ?? null);
@@ -112,12 +82,12 @@ const useItems = <Item, CreateOneInput, UpdateOneInput>(
   const createOne = async (input: CreateOneInput, options?: FetchApiOptions) => {
     const response = await fetchApi<ItemData<Item>>(apiRoutes.CreateOne, {
       method: 'POST',
-      data: input,
+      body: input,
       ...options,
     });
 
     if (response.success) {
-      mutateAndRefetch();
+      mutate();
     }
 
     return response;
@@ -132,44 +102,31 @@ const useItems = <Item, CreateOneInput, UpdateOneInput>(
     return response;
   };
 
-  const readAll = async (
-    page?: number,
-    pageSize?: number | 'all',
-    columnsSort?: SortParam,
-    filters?: FilterParam[],
-    options?: FetchApiOptions
-  ) => {
-    setSavedReadAllParams((value) => ({
-      ...value,
-      page,
-      pageSize,
-      columnsSort,
-      filters,
-    }));
+  const readAll = async (options?: FetchApiOptions) => {
+    const response = await fetchApi<ItemsData<Item>>(apiRoutes.ReadAll, options);
 
-    const paginationOptions = {
-      page: page || 1,
-      perPage: pageSize || 50,
-    };
-    // @ts-ignore: ignoring uncorrect params type mismatch
-    const queryParams = new URLSearchParams(paginationOptions).toString();
-    const filterParam = filters
-      ?.filter((filter) => filter !== undefined && filter !== null)
-      .map((filter) => encodeURIComponent(JSON.stringify(filter)));
-
-    const sortParams = columnsSort
-      ? `&order[column]=${columnsSort.column}&order[dir]=${columnsSort.dir}`
-      : '';
-
-    const response = await fetchApi<ItemsData<Item>>(
-      `${apiRoutes.ReadAll}`,
-      options
-    );
     if (response.success) {
       setItems(response.data?.items ?? null);
-      setPaginationMeta(response.data?.meta ?? null);
     }
-    console.log('useItems readAll'+ JSON.stringify(response.data));
+
+    return response;
+  };
+
+  const readOwn = async (id: Id, options?: FetchApiOptions) => {
+    const response = await fetchApi<ItemsData<Item>>(
+      apiRoutes.ReadOwn.replace('{id}', id.toString()),
+      options
+    );
+
+    return response;
+  };
+
+  const readRegistred = async (id: Id, options?: FetchApiOptions) => {
+    const response = await fetchApi<ItemsData<Item>>(
+      apiRoutes.ReadRegistred.replace('{id}', id.toString()),
+      options
+    );
+
     return response;
   };
 
@@ -178,30 +135,63 @@ const useItems = <Item, CreateOneInput, UpdateOneInput>(
       apiRoutes.UpdateOne.replace('{id}', id.toString()),
       {
         method: 'PUT',
-        data: input,
+        body: { userId: id, ...input},
         ...options,
       }
     );
 
     if (response.success) {
-      mutateAndRefetch();
+      mutate();
     }
 
     return response;
   };
 
-  const patchOne = async (id: Id, input: Partial<UpdateOneInput>, options?: FetchApiOptions) => {
+  const cancelOne = async (id: Id, options?: FetchApiOptions) => {
     const response = await fetchApi<ItemData<Item>>(
-      apiRoutes.UpdateOne.replace('{id}', id.toString()),
+      apiRoutes.CancelOne.replace('{id}', id.toString()),
       {
-        method: 'PATCH',
-        data: input,
+        method: 'PUT',
         ...options,
       }
     );
 
     if (response.success) {
-      mutateAndRefetch();
+      mutate();
+    }
+
+    return response;
+  };
+
+  const restoreOne = async (id: Id, options?: FetchApiOptions) => {
+    const response = await fetchApi<ItemData<Item>>(
+      apiRoutes.RestoreOne.replace('{id}', id.toString()),
+      {
+        method: 'PUT',
+        ...options,
+      }
+    );
+
+    if (response.success) {
+      mutate();
+    }
+
+    return response;
+  };
+
+  const registerOne = async (id: Id, input: any, options?: FetchApiOptions) => {
+    console.log(input);
+    const response = await fetchApi<ItemData<Item>>(
+      apiRoutes.RegisterOne.replace('{id}', id.toString()),
+      {
+        method: 'POST',
+        body: JSON.stringify(input),
+        ...options,
+      }
+    );
+
+    if (response.success) {
+      mutate();
     }
 
     return response;
@@ -217,7 +207,7 @@ const useItems = <Item, CreateOneInput, UpdateOneInput>(
     );
 
     if (response.success) {
-      mutateAndRefetch();
+      mutate();
     }
 
     return response;
@@ -225,14 +215,17 @@ const useItems = <Item, CreateOneInput, UpdateOneInput>(
 
   return {
     items,
-    paginationMeta,
     createOne,
     readOne,
     readAll,
+    readOwn,
+    readRegistred,
     updateOne,
-    patchOne,
+    cancelOne,
+    restoreOne,
+    registerOne,
     deleteOne,
-    mutate: mutateAndRefetch,
+    mutate,
   };
 };
 

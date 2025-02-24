@@ -3,28 +3,20 @@ import { Stack } from '@mui/system';
 import Grid from '@mui/material/Grid';
 import FormProvider from '@common/components/lib/react-hook-form';
 import * as Yup from 'yup';
-import { DeepPartial, DefaultValues, FieldValues, UseFormReturn, useForm } from 'react-hook-form';
+import { DeepPartial, FieldValues, UseFormReturn, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LoadingButton } from '@mui/lab';
 import Skeleton from '@mui/material/Skeleton';
 import Button from '@mui/material/Button';
 import { useRouter } from 'next/router';
-import React, { Ref, forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import { Any, AnyObject, CrudObject, CrudAppRoutes } from '@common/defs/types';
+import React, { Children, Ref, forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { Any, AnyObject, CrudAppRoutes, CrudObject } from '@common/defs/types';
 import { ItemResponse, UseItems } from '@common/hooks/useItems';
 import { useSnackbar } from 'notistack';
 import { Tab, Tabs } from '@mui/material';
-import useUploads from '@modules/uploads/hooks/api/useUploads';
-import { useUploadFormContext } from '@common/contexts/UploadFormContext';
-import { useTranslation } from 'react-i18next';
-import _ from 'lodash';
 
-export interface CurrentFormStepRef<
-  CreateOneInput extends FieldValues = Any,
-  UpdateOneInput extends FieldValues = Any
-> {
+export interface CurrentFormStepRef {
   submit: () => Promise<FormSubmitResponse<AnyObject>>;
-  methods: UseFormReturn<CreateOneInput | UpdateOneInput>;
 }
 
 export interface FormSubmitResponse<T> {
@@ -37,10 +29,9 @@ export interface PresubmitResponse<CreateOneInput, UpdateOneInput> {
   data: CreateOneInput | UpdateOneInput;
 }
 
-export enum FORM_MODE {
+enum FORM_MODE {
   CREATE = 'CREATE',
   UPDATE = 'UPDATE',
-  PATCH = 'PATCH',
 }
 
 export interface FormTabs<TAB_ENUM> {
@@ -67,9 +58,6 @@ export interface UpsertCrudItemFormProps<
   displayCard?: boolean;
   displayFooter?: boolean;
   tabs?: FormTabs<TAB_ENUM>;
-  afterFooter?: JSX.Element;
-  mode?: FORM_MODE;
-  onWatch?: (values: CreateOneInput | UpdateOneInput) => void;
   onPreSubmit?: (
     data: CreateOneInput | UpdateOneInput
   ) => PresubmitResponse<CreateOneInput, UpdateOneInput>;
@@ -101,50 +89,33 @@ const UpsertCrudItemForm = <
     defaultValues,
     children,
     tabs,
-    mode = FORM_MODE.CREATE,
     onPreSubmit,
     onPostSubmit,
   } = props;
+
   const { enqueueSnackbar } = useSnackbar();
   const [loaded, setLoaded] = useState(false);
   const router = useRouter();
-  const { createOne, updateOne, patchOne } = useItems();
-  const { createOne: createOneUpload, updateOne: updateOneUpload, deleteMulti } = useUploads();
-  const [previousData, setPreviousData] = useState<CreateOneInput | UpdateOneInput>();
+  const { createOne, updateOne } = useItems();
+  const mode = item ? FORM_MODE.UPDATE : FORM_MODE.CREATE;
   const methods = useForm<CreateOneInput | UpdateOneInput>({
     resolver: yupResolver(schema),
-    defaultValues: defaultValues as DefaultValues<CreateOneInput | UpdateOneInput>,
+    defaultValues,
   });
   const [currentTab, setCurrentTab] = useState(tabs?.formItem);
-  const { uploadsIdsToDelete, filesToUpload } = useUploadFormContext() ?? {
-    uploadsIdsToDelete: [],
-    filesToUpload: [],
-  };
-
-  const { t } = useTranslation(['common']);
 
   const {
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
     getValues,
   } = methods;
-
-  const data = methods.watch();
+  console.log('Form errors:', errors); // Log validation errors
 
   useEffect(() => {
     setLoaded(true);
   }, []);
-
-  useEffect(() => {
-    if (!previousData || (previousData && !_.isEqual(previousData, data))) {
-      if (props.onWatch) {
-        props.onWatch(data);
-      }
-      setPreviousData(data);
-    }
-  }, [data]);
-
   const onSubmit = async (data: CreateOneInput | UpdateOneInput) => {
+    console.log('onSubmit fired with data:', data);
     if (onPreSubmit) {
       const preSubmitResponse = onPreSubmit(data);
       const error = preSubmitResponse.error;
@@ -155,31 +126,8 @@ const UpsertCrudItemForm = <
       data = preSubmitResponse.data;
     }
     let response;
-
-    if (filesToUpload && filesToUpload.length > 0) {
-      const uploads = await filesToUpload.reduce(async (uploads, fileToUpload) => {
-        if (uploads instanceof Promise) {
-          uploads = await uploads;
-        }
-        const { data, success } = fileToUpload.uploadId
-          ? await updateOneUpload(fileToUpload.uploadId, { file: fileToUpload.file })
-          : await createOneUpload({ file: fileToUpload.file });
-        const uploadId = success ? data?.item.id : null;
-        return {
-          ...uploads,
-          ...(uploadId && { [fileToUpload.key]: uploadId }),
-        };
-      }, {});
-      data = { ...data, ...uploads };
-    }
-
     if (mode === FORM_MODE.UPDATE && item) {
       response = await updateOne(item.id, data as UpdateOneInput, {
-        displayProgress: true,
-        displaySuccess: true,
-      });
-    } else if (mode === FORM_MODE.PATCH && item) {
-      response = await patchOne(item.id, data as Partial<UpdateOneInput>, {
         displayProgress: true,
         displaySuccess: true,
       });
@@ -190,9 +138,6 @@ const UpsertCrudItemForm = <
       });
     }
     if (response.success) {
-      if (uploadsIdsToDelete && uploadsIdsToDelete.length > 0) {
-        deleteMulti(uploadsIdsToDelete);
-      }
       if (onPostSubmit) {
         onPostSubmit(data, response, methods);
       }
@@ -216,10 +161,11 @@ const UpsertCrudItemForm = <
       const hasErrors = Object.keys(methods.formState.errors).length > 0;
       return { data, errors, hasErrors };
     },
-    methods,
   }));
 
   const displayForm = () => {
+  console.log('UpdateEventForm item' + tabs)
+  console.log('UpdateEventForm item' + item.title)
     return (
       <>
         {loaded ? (
@@ -250,7 +196,7 @@ const UpsertCrudItemForm = <
                       onClick={() => router.push(routes.ReadAll)}
                       sx={{ marginRight: 2 }}
                     >
-                      {t('common:return')}
+                      Return
                     </Button>
                     <LoadingButton
                       size="large"
@@ -258,9 +204,8 @@ const UpsertCrudItemForm = <
                       variant="contained"
                       loading={isSubmitting}
                     >
-                      {t('common:save')}
+                      Save
                     </LoadingButton>
-                    {props.afterFooter}
                   </Stack>
                 )}
               </FormProvider>

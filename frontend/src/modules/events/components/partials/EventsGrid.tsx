@@ -16,14 +16,12 @@ export interface Row extends CrudRow {
 	date: Date;
 	location: string;
 	description: string;
-	// image: string;
 	maxParticipants: number;
 	organizerId: number;
 	organizerName: string;
 	categoryId: number;
 	categoryName: string;
 	participantsCount:number;
-	// participants: {}[],
 }
 
 const EventsGrid = (props: EventCardProps) => {
@@ -35,13 +33,13 @@ const EventsGrid = (props: EventCardProps) => {
 		date: item.date,
 		location: item.location,
 		description: item.description,
-		image: item.image,
 		maxParticipants: item.maxParticipants,
 		organizerId: item.organizer.id,
 		organizerName: item.organizer?.fullName,
 		categoryId: item.category.id,
 		categoryName: item.category.name,
 		participantsCount: item.participantsCount,
+		isRegistered:item.isRegistered
 	  };
 	};
   

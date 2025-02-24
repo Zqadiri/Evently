@@ -6,7 +6,7 @@ const Labels: CrudLabels = {
   ReadAll: 'Events list',
   Items: 'Events',
   EditOne: 'Edit event',
-  Registered: 'Registered the event',
+  Registered: 'Registered events',
   MyEvents: 'My events',
 };
 

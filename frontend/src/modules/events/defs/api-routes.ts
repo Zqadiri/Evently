@@ -1,14 +1,11 @@
 import { CrudApiRoutes } from '@common/defs/types';
 
-/**
- * API endpoints for CRUD operations related to events
- */
-
 const prefix = '/events';
 const ApiRoutes: CrudApiRoutes = {
   CreateOne: prefix,
   ReadAll: prefix,
   ReadOne: prefix + '/{id}',
+  ReadRegistred: prefix + '/registered',
   ReadOwn: prefix + '/myevents/{id}',
   UpdateOne: prefix + '/{id}',
   CancelOne: prefix + '/cancel/{id}',
@@ -18,4 +15,3 @@ const ApiRoutes: CrudApiRoutes = {
 };
 
 export default ApiRoutes;
-

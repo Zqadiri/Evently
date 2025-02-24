@@ -6,16 +6,14 @@ export interface CreateOneInput {
   title: string;
   date: Date;
   location: string;
-  // image: string;
   description: string;
   maxParticipants: number;
 }
 
 export interface UpdateOneInput {
-  name: string;
+  title: string;
   date: Date;
   location: string;
-  // image: string;
   description: string;
   maxParticipants: number;
 }

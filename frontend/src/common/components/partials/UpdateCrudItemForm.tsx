@@ -2,7 +2,6 @@ import { FieldValues } from 'react-hook-form';
 import { Any, AnyObject, CrudObject } from '@common/defs/types';
 import UpsertCrudItemForm, {
   CurrentFormStepRef,
-  FORM_MODE,
   UpsertCrudItemFormProps,
 } from '@common/components/partials/UpsertCrudItemForm';
 import { Ref, forwardRef } from 'react';
@@ -16,7 +15,7 @@ const UpdateCrudItem = <Item extends CrudObject, UpdateOneInput extends AnyObjec
 ) => {
   return (
     <>
-      <UpsertCrudItemForm<Item, UpdateOneInput> {...props} mode={FORM_MODE.UPDATE} ref={ref}>
+      <UpsertCrudItemForm<Item, UpdateOneInput> {...props} ref={ref}>
         {props.children}
       </UpsertCrudItemForm>
     </>

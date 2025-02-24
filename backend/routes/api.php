@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserEventController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -48,6 +49,7 @@ Route::middleware('auth:api')->group(
                 );
             }
         );
+
         Route::prefix('users')->name('users.')->group(
             function () {
                 Route::controller(UserController::class)->group(
@@ -69,11 +71,17 @@ Route::middleware('auth:api')->group(
                     function () {
                         Route::get('/', 'readAll');
                         Route::get('/{eventId}', 'readOne');
-                        Route::post('/{eventId}/participants', 'addParticipants');
-                        Route::post('/{eventId}/join', 'joinEvent')->middleware('auth');
-                        Route::get('/category/{categoryId}', 'getEventsByCategory');
+                        Route::get('/myevents/{id}', 'readOwn');
+                        Route::put('/{id}', 'updateOne');
+                        Route::get('/registered', 'readRegistered');
+
                     }
                 );
+
+                Route::controller(UserEventController::class)->group(function () {
+                    Route::post('/register/{id}', 'register');
+                    Route::post('/unregister/{id}', 'unregister');
+                });
             }
         );
 

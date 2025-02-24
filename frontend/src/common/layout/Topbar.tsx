@@ -90,6 +90,16 @@ const Topbar = () => {
         },
       ],
     },
+    {
+      label: 'My Events',
+      link: Routes.Events.MyEvents,
+      onClick: () => router.push(Routes.Events.MyEvents),
+    },
+    {
+      label: 'Registred Events',
+      link: Routes.Events.Registered,
+      onClick: () => router.push(Routes.Events.Registered),
+    }
   ];
 
   const toggleDropdown = () => {
