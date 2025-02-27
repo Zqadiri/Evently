@@ -1,7 +1,7 @@
 import MenuPopover from '@common/components/lib/utils/MenuPopover/MenuPopover';
 import { Any, CRUD_ACTION, CrudAppRoutes, CrudRow, Id } from '@common/defs/types';
 import usePermissions from '@modules/permissions/hooks/usePermissions';
-import { FilterParam, SortParam, UseItems, UseItemsOptions } from '@common/hooks/useItems';
+import { UseItems, UseItemsOptions } from '@common/hooks/useItems';
 import { DeleteOutline, Edit, MoreVert, LockTwoTone, LockOpen } from '@mui/icons-material';
 import { Box, Card, IconButton, MenuItem } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
@@ -72,7 +72,7 @@ const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
     sortModel: propSortModel,
     refreshIndex,
   } = props;
-  const { items, paginationMeta, readAll, deleteOne, mutate } = useItems(useItemsOptions);
+  const { items, readAll, deleteOne, mutate } = useItems(useItemsOptions);
   const [rows, setRows] = useState<Row[]>([]);
   const [columns, setColumns] = useState<GridColumns>([]);
   const [filterModel, setFilterModel] = useState<GridFilterModel>(propFilterModel || { items: [] });

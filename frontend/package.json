@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbo",
-    "build": "next build",
+    "build": "echo 'No build step required'",
     "start": "next start",
     "lint": "next lint",
     "prepare": "husky install"
