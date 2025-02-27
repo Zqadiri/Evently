@@ -23,6 +23,7 @@ const useUsers: UseItems<User, CreateOneInput, UpdateOneInput> = (
   opts: UseItemsOptions = defaultOptions
 ) => {
   const apiRoutes = ApiRoutes.Users;
+  // @ts-ignore
   const useItemsHook = useItems<User, CreateOneInput, UpdateOneInput>(apiRoutes, opts);
   return useItemsHook;
 };

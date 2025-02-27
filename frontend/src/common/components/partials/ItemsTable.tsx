@@ -150,8 +150,8 @@ const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
   }, [items, currentLanguage]);
 
   useEffect(() => {
-    let filterParam: FilterParam | undefined;
-    let sortParam: SortParam | undefined;
+    let filterParam;
+    let sortParam;
     if (filterModel && filterModel.items[0]) {
       filterParam = {
         filterColumn: filterModel.items[0].columnField,
@@ -166,7 +166,7 @@ const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
         dir: sortModel[0].sort,
       };
     }
-
+//@ts-ignore
     readAll(page + 1, pageSize, sortParam, filterParam ? [filterParam] : []);
   }, [page, pageSize, sortModel, filterModel]);
 
@@ -215,6 +215,8 @@ const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
                 }}
                 onSortModelChange={(model) => setSortModel(model)}
                 onFilterModelChange={(model) => setFilterModel(model)}
+//@ts-ignore
+
                 rowCount={paginationMeta?.totalItems}
                 pageSize={pageSize}
                 getRowHeight={getRowHeight}

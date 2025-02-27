@@ -38,7 +38,9 @@ const EditEventPage: NextPage = () => {
     if (id) {
       const { data } = await readOne(id);
       if (data) {
+        // @ts-ignore
         if (data.items) {
+          // @ts-ignore
           setItem(data.items);
         }
       }

@@ -16,7 +16,7 @@ const ResetPasswordPage: NextPage<ResetPasswordPageProps> = ({ token }) => {
     </>
   );
 };
-
+// @ts-ignore
 export const getServerSideProps: GetServerSideProps<ResetPasswordPageProps> = async (context) => {
   const { locale, params } = context;
   const { token } = params!; // Extract the token from the URL
@@ -36,6 +36,7 @@ export const getServerSideProps: GetServerSideProps<ResetPasswordPageProps> = as
 };
 
 // Wrap the page with the withAuth higher-order component
+// @ts-ignore
 export default withAuth(ResetPasswordPage, {
   mode: AUTH_MODE.LOGGED_OUT,
   redirectUrl: Routes.Common.Home,

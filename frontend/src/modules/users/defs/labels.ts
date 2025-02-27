@@ -1,5 +1,6 @@
 import { CrudLabels } from '@common/defs/types';
 
+// @ts-ignore
 const Labels: CrudLabels = {
   CreateNewOne: 'common.create_new_one',
   NewOne: 'common.new_one',

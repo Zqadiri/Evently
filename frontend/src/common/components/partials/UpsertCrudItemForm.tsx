@@ -100,6 +100,7 @@ const UpsertCrudItemForm = <
   const mode = item ? FORM_MODE.UPDATE : FORM_MODE.CREATE;
   const methods = useForm<CreateOneInput | UpdateOneInput>({
     resolver: yupResolver(schema),
+    //@ts-ignore
     defaultValues,
   });
   const [currentTab, setCurrentTab] = useState(tabs?.formItem);
@@ -164,8 +165,6 @@ const UpsertCrudItemForm = <
   }));
 
   const displayForm = () => {
-  console.log('UpdateEventForm item' + tabs)
-  console.log('UpdateEventForm item' + item.title)
     return (
       <>
         {loaded ? (

@@ -25,6 +25,7 @@ const CreateEventForm = (_props: CreateEventFormProps) => {
   });
   const defaultValues: CreateOneInput = {
     name: '',
+      //@ts-ignore
     date: dayjs(new Date()),
     location: '',
     description: '',

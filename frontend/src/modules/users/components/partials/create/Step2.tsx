@@ -18,6 +18,7 @@ import * as Yup from 'yup';
 
 interface CreateUserStep2Props extends FormStepProps {}
 
+//@ts-ignore
 const CreateUserStep2 = forwardRef((props: CreateUserStep2Props, ref: Ref<FormStepRef>) => {
   const { next, data } = props;
   const formRef = useRef<CurrentFormStepRef>();

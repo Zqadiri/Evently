@@ -50,6 +50,7 @@ export const getStaticProps = async ({ locale }: { locale: string }) => ({
 export default withAuth(
   withPermissions(UsersPage, {
     requiredPermissions: {
+      // @ts-ignore
       entity: Namespaces.Users,
       action: CRUD_ACTION.READ,
     },

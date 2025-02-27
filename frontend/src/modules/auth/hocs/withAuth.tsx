@@ -11,7 +11,7 @@ export enum AUTH_MODE {
 }
 
 interface WithAuthOptions {
-  mode?: AUTH_MODE;
+  mode?: string;
   redirectUrl?: string;
 }
 

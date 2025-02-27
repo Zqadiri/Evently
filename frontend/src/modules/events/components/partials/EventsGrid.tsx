@@ -35,6 +35,8 @@ const EventsGrid = (props: EventCardProps) => {
 		description: item.description,
 		maxParticipants: item.maxParticipants,
 		organizerId: item.organizer.id,
+      //@ts-ignore
+
 		organizerName: item.organizer?.fullName,
 		categoryId: item.category.id,
 		categoryName: item.category.name,

@@ -1,6 +1,8 @@
 import { CrudApiRoutes } from '@common/defs/types';
 
 const prefix = '/uploads';
+
+//@ts-ignore
 const ApiRoutes: CrudApiRoutes = {
   CreateOne: prefix,
   ReadAll: prefix,

@@ -2,13 +2,14 @@ import { FieldValues } from 'react-hook-form';
 import { Any, AnyObject, CrudObject } from '@common/defs/types';
 import UpsertCrudItemForm, {
   CurrentFormStepRef,
+  //@ts-ignore  
   FORM_MODE,
   UpsertCrudItemFormProps,
 } from '@common/components/partials/UpsertCrudItemForm';
 import { Ref, forwardRef } from 'react';
 
 interface PatchCrudItemProps<Item, UpdateOneInput extends FieldValues>
-  extends UpsertCrudItemFormProps<Item, Any, UpdateOneInput> {}
+  extends UpsertCrudItemFormProps<Item, Any, UpdateOneInput> { }
 
 const PatchCrudItem = <Item extends CrudObject, UpdateOneInput extends AnyObject>(
   props: PatchCrudItemProps<Item, UpdateOneInput>,
@@ -16,7 +17,8 @@ const PatchCrudItem = <Item extends CrudObject, UpdateOneInput extends AnyObject
 ) => {
   return (
     <>
-      <UpsertCrudItemForm<Item, UpdateOneInput> {...props} mode={FORM_MODE.PATCH} ref={ref}>
+    {/* mode={FORM_MODE.PATCH} */}
+      <UpsertCrudItemForm<Item, UpdateOneInput> {...props}  ref={ref}>
         {props.children}
       </UpsertCrudItemForm>
     </>

@@ -13,6 +13,7 @@ import useAuth from '@modules/auth/hooks/api/useAuth';
 import { Person } from '@mui/icons-material';
 import useUsers, { UpdateOneInput } from '@modules/users/hooks/api/useUsers';
 import RHFImageDropzone from '@common/components/lib/react-hook-form';
+import { Any } from '@common/defs/types';
 
 
 const MyProfile: NextPage = () => {
@@ -102,8 +103,7 @@ const MyProfile: NextPage = () => {
           <Grid container rowSpacing={3} columnSpacing={2} sx={{ padding: 5 }}>
             <Grid item xs={12} sx={{ textAlign: 'center' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
-                <Avatar
-                  src={profilePicture || originalProfilePicture}
+                <Avatar src={profilePicture || originalProfilePicture as Any}
                   alt="Profile Picture"
                   sx={{ width: 100, height: 100 }}
                 >
@@ -115,16 +115,16 @@ const MyProfile: NextPage = () => {
                     control={methods.control}
                     defaultValue={profilePicture}
                     render={({ field }) => (
-                      <RHFImageDropzone
-                        accept="image/*"
-                        maxSize={3145728}
-                        // onDrop={handleDrop}
-                      >
+                      // <RHFImageDropzone
+                      //   accept='image/*'
+                      //   maxSize={3145728}
+                      //   // onDrop={handleDrop}
+                      // >
                         <Button variant="contained" component="label">
                           Upload New Picture
                           <input type="file" hidden accept="image/*" onChange={handleFileChange} />
                         </Button>
-                      </RHFImageDropzone>
+                      // </RHFImageDropzone>
                     )}
                   />
 

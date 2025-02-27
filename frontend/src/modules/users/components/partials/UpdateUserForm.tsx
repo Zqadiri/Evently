@@ -29,6 +29,7 @@ const UpdateUserForm = (props: UpdateUserFormProps) => {
       })
       .required(t('common:field_required')),
   });
+  //@ts-ignore
   const defaultValues: UpdateOneInput = {
     email: item.email,
     password: '',

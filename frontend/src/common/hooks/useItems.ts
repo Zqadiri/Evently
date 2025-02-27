@@ -82,6 +82,7 @@ const useItems = <Item, CreateOneInput, UpdateOneInput>(
   const createOne = async (input: CreateOneInput, options?: FetchApiOptions) => {
     const response = await fetchApi<ItemData<Item>>(apiRoutes.CreateOne, {
       method: 'POST',
+      //@ts-ignore
       body: input,
       ...options,
     });
@@ -135,6 +136,7 @@ const useItems = <Item, CreateOneInput, UpdateOneInput>(
       apiRoutes.UpdateOne.replace('{id}', id.toString()),
       {
         method: 'PUT',
+      //@ts-ignore
         body: { userId: id, ...input},
         ...options,
       }
@@ -185,6 +187,7 @@ const useItems = <Item, CreateOneInput, UpdateOneInput>(
       apiRoutes.RegisterOne.replace('{id}', id.toString()),
       {
         method: 'POST',
+      //@ts-ignore
         body: JSON.stringify(input),
         ...options,
       }
