@@ -58,8 +58,8 @@ const EditEventPage: NextPage = () => {
           { name: item ? item.title : Labels.Events.EditOne },
         ]}
       />
-      
-      {item && <UpdateEventForm item={item}  />}
+
+      {item && <UpdateEventForm item={item} />}
     </>
   );
 };

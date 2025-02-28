@@ -27,7 +27,6 @@ const UpdateEventForm = (props: UpdateEventFormProps) => {
   const defaultValues: UpdateOneInput = {
     title: item.title,
       //@ts-ignore
-
     date: dayjs(item.date).format('YYYY-MM-DD hh:mm'),
     location: item.location,
     description: item.description,

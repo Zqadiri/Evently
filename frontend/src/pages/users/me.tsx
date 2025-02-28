@@ -12,9 +12,7 @@ import { LoadingButton } from '@mui/lab';
 import useAuth from '@modules/auth/hooks/api/useAuth';
 import { Person } from '@mui/icons-material';
 import useUsers, { UpdateOneInput } from '@modules/users/hooks/api/useUsers';
-import RHFImageDropzone from '@common/components/lib/react-hook-form';
 import { Any } from '@common/defs/types';
-
 
 const MyProfile: NextPage = () => {
   const { user } = useAuth();
@@ -25,7 +23,7 @@ const MyProfile: NextPage = () => {
 
   // Set the original profile picture when the component mounts
   useEffect(() => {
-    console.log('user: ' + user?.id + user?.name + user?.profile_picture + user?.email)
+    // console.log('user: ' + user?.id + user?.name + user?.profile_picture + user?.email)
     if (user?.profile_picture) {
       setOriginalProfilePicture(user.profile_picture);
     }
@@ -115,16 +113,10 @@ const MyProfile: NextPage = () => {
                     control={methods.control}
                     defaultValue={profilePicture}
                     render={({ field }) => (
-                      // <RHFImageDropzone
-                      //   accept='image/*'
-                      //   maxSize={3145728}
-                      //   // onDrop={handleDrop}
-                      // >
-                        <Button variant="contained" component="label">
-                          Upload New Picture
-                          <input type="file" hidden accept="image/*" onChange={handleFileChange} />
-                        </Button>
-                      // </RHFImageDropzone>
+                      <Button variant="contained" component="label">
+                        Upload New Picture
+                        <input type="file" hidden accept="image/*" onChange={handleFileChange} />
+                      </Button>
                     )}
                   />
 

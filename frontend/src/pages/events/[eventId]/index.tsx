@@ -41,7 +41,7 @@ const EventPage: NextPage = () => {
     if (id) {
       const { data } = await readOne(id);
       if (data) {
-      // @ts-ignore
+        // @ts-ignore
         if (data.items) {
           // @ts-ignore
           setItem(data.items);
@@ -101,8 +101,8 @@ const EventPage: NextPage = () => {
                   </Stack>
                   <Stack direction="row" alignItems="center" spacing={2} my={1}>
                     <Person2Outlined color="primary" />
-                    
-                    <Typography variant="body1">Hosted by: {item.organizer.name}</Typography> 
+
+                    <Typography variant="body1">Hosted by: {item.organizer.name}</Typography>
                   </Stack>
                 </Stack>
               </Grid>
